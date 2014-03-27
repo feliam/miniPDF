@@ -9,15 +9,15 @@ The legendary minipdf python library reaches github. This is a cleaner version o
 It supports only the most basic file structure (PDF3200:7.5.1), that’s it without incremental updates or linearization.
 
 ![](https://feliam.files.wordpress.com/2010/01/pdffilestructure.jpg?w=240)
-* A one-line header identifying the version of the PDF specification to which the file conforms
+* A one-line header identifying the version of the PDF file
 * A body containing the objects that make up the document contained in the file
 * A cross-reference table containing information about the indirect objects in the file
-* A trailer giving the location of the cross-reference table and of certain special objects within the body of the file
+* A trailer dictionary pointing the location of the cross-reference table and other special objects within the body of the file
     
 Also all basic PDF types: null, references, strings, numbers, arrays and dictionaries.
 
 ## Example: A minimal text displaying PDF 
-As an example Let's create a minimal text displaying PDF file in python using minipdf. The following graph outlines the simples possible structure:
+As an example Let's create a minimal text displaying PDF file in python using minipdf. The following graph outlines the simplest possible structure:
 ![](http://feliam.files.wordpress.com/2010/01/minimalpdfstructure.jpg?w=600)
 
 ### The python script
@@ -27,7 +27,7 @@ from minipdf import *
 doc = PDFDoc()
 ```
 
-As shown in the last figure the main object is the *Catalog*. The next 3 lines construct a *Catalog* dictionary object, add it to the document and set it as the root object…
+As shown in the last figure the main object is the *Catalog*. The next 3 lines builds a *Catalog* dictionary object, add them to the document and set it as the root object…
 
 ```python
 catalog = PDFDict()
@@ -55,7 +55,7 @@ startxref
 %%EOF
 ```
 
-As you can see, it's only a matter of adding all the different pdf objects link togheter from the *Catalog*. The library allows to add them in almost any order. Let’s try to follow the basic tree structure. To add a *page*, first we need a *pages* dictionary.
+As you can see, it's only a matter of adding all the different pdf objects link together from the *Catalog*. The library allows to add them in almost any order. Let’s try to follow the basic tree structure. To add a *page*, first we need a *pages* dictionary.
 ```
 pages = PDFDict()
 pages['Type'] = PDFName('Pages')
@@ -105,7 +105,7 @@ The *content stream* is linked from the page
 page['Contents'] = PDFRef(contents)
 ```
 
-Note that in the *content stream* we are referencing a font name */F1*. We should define this font.
+Note that in the *content stream* we are referencing a font name */F1*. We shall define this font.
 
 ```
 font = PDFDict()
@@ -130,7 +130,7 @@ resources['Font'] = fontname
 doc += resources
 ```
 
-Then linked the resources to it's page under the *Resources* field.
+Then link the resources to it's page under the *Resources* field.
 
 ```
 page['Resources'] = PDFRef(resources)
