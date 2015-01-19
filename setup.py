@@ -50,7 +50,6 @@ setup(
         'Programming Language :: Python',
         'Development Status :: 4 - Beta',
         'Natural Language :: English',
-        'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
@@ -58,7 +57,8 @@ setup(
         'Topic :: Software Development :: Libraries :: Application Frameworks',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         ],
-    extras_require={
-        'testing': ['pytest'],
-    }
+    scripts=['scripts/mkpdftext'],
+    #extras_require={
+    #    'testing': ['pytest'],
+    #}
 )

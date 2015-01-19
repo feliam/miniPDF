@@ -65,7 +65,7 @@ class PDFDict(PDFObject):
         s="<<"
         s+=random.choice(["\00","\x09","\0a","\x0c","\x0d","\x20"])
         for name in self.dict:
-            s+="%s%c"%(PDFName(name).__str__(),
+            s+="%s"%PDFName(name).__str__()
             s+=getSeparator()
             s+="%s"%self.dict[name]
             s+=getSeparator()
