@@ -1,0 +1,109 @@
+#! /usr/bin/env python
+#More info at http://github.com/feliam/miniPDF
+'''
+Make a minimal PDF with XFA
+'''
+import sys, StringIO
+from minipdf import PDFDoc, PDFName, PDFNum, PDFString, PDFRef, PDFStream, PDFDict, PDFArray
+
+import optparse
+parser = optparse.OptionParser(usage="%prog [options] [TEXT]", description=__doc__)
+parser.add_option("-i", "--input", metavar="IFILE", help="read XFA from IFILE (otherwise stdin)")
+parser.add_option("-o", "--output", metavar="OFILE", help="write output to OFILE (otherwise stdout)")
+(options, args) = parser.parse_args()
+
+if options.input:
+    file_input = file(options.input)
+elif len(args) > 0:
+    file_input = StringIO.StringIO(" ".join(args))
+else:
+    file_input = sys.stdin
+
+
+if not options.output is None:
+    file_output = file(options.output, "w")
+else:
+    file_output = sys.stdout
+
+
+#The document
+doc = PDFDoc()
+
+#font
+font = PDFDict()
+font['Name'] = PDFName('F1')
+font['Subtype'] = PDFName('Type1')
+font['BaseFont'] = PDFName('Helvetica')
+
+#name:font map
+fontname = PDFDict()
+fontname['F1'] = font
+
+#resources
+resources = PDFDict()
+resources['Font'] = fontname
+doc += resources
+
+#contents
+contents = PDFStream('''BT 
+/F1 24 Tf 0 700 Td 
+%s Tj 
+ET
+'''%PDFString(file_input.read()))
+doc += contents
+
+#page
+page = PDFDict()
+page['Type'] = PDFName('Page')
+page['MediaBox'] = PDFArray([0, 0, 612, 792])
+page['Contents'] = PDFRef(contents)
+page['Resources'] = PDFRef(resources)
+doc += page
+
+#pages
+pages = PDFDict()
+pages['Type'] = PDFName('Pages')
+pages['Kids'] = PDFArray([PDFRef(page)])
+pages['Count'] = PDFNum(1)
+doc += pages
+
+#add parent reference in page
+page['Parent'] = PDFRef(pages)
+
+
+xfa = PDFStream(file(sys.argv[1]).read())
+doc.add(xfa)
+
+#form
+form = PDFDict()
+form['XFA'] = PDFRef(xfa)
+doc+=form
+
+#catalog
+catalog = PDFDict()
+catalog['Type'] = PDFName("Catalog")
+catalog['Pages'] =PDFRef(pages)
+catalog['NeedsRendering'] = PDFBool(True)
+catalog['AcroForm'] = PDFRef(form)
+
+
+adbe = PDFDict()
+adbe['BaseVersion'] = '/1.7'
+adbe['ExtensionLevel'] = PDFNum(3)
+
+extensions = PDFDict()
+extensions['ADBE'] = adbe
+
+
+
+#catalog
+catalog = PDFDict()
+catalog['Type'] = PDFName('Catalog')
+catalog['Pages'] = PDFRef(pages)
+doc += catalog
+
+doc.setRoot(catalog)
+
+file_output.write(str(doc))
+
+#@feliam
