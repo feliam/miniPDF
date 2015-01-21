@@ -4,7 +4,7 @@
 Make a minimal PDF with XFA
 '''
 import sys, StringIO
-from minipdf import PDFDoc, PDFName, PDFNum, PDFString, PDFRef, PDFStream, PDFDict, PDFArray
+from minipdf import PDFDoc, PDFName, PDFNum, PDFString, PDFRef, PDFStream, PDFDict, PDFArray, PDFBool
 
 import optparse
 parser = optparse.OptionParser(usage="%prog [options] [TEXT]", description=__doc__)
@@ -72,7 +72,7 @@ page['Parent'] = PDFRef(pages)
 
 
 xfa = PDFStream(file(sys.argv[1]).read())
-doc.add(xfa)
+doc+=xfa
 
 #form
 form = PDFDict()
