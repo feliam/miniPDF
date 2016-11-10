@@ -1,0 +1,128 @@
+#! /usr/bin/env python
+#More info at http://github.com/feliam/miniPDF
+'''
+Make a minimal PDF file displaying some text using an specified OTF font file.
+'''
+
+import sys, StringIO
+from minipdf import PDFDoc, PDFName, PDFNum, PDFString, PDFRef, PDFStream, PDFDict, PDFArray
+
+import optparse
+parser = optparse.OptionParser(usage="%prog [options] [TEXT]", description=__doc__)
+parser.add_option("-i", "--input", metavar="IFILE", help="read text from IFILE (otherwise stdin)")
+parser.add_option("-o", "--output", metavar="OFILE", help="write output to OFILE (otherwise stdout)")
+(options, args) = parser.parse_args()
+
+if options.input:
+    file_input = file(options.input)
+elif len(args) > 0:
+    file_input = StringIO.StringIO(" ".join(args))
+else:
+    file_input = sys.stdin
+
+
+if not options.output is None:
+    file_output = file(options.output, "w")
+else:
+    file_output = sys.stdout
+
+
+#The document
+doc = PDFDoc()
+
+#the font file
+fontstream = PDFStream(file_input.read())
+fontstream['Subtype'] = PDFName("OpenType")
+doc += fontstream
+#fontdescriptor
+fontdesc = PDFDict()
+fontdesc['Type'] = PDFName("FontDescriptor")
+#fontdesc['ItalicAngle'] = PDFNum(0))
+#fontdesc['Descent'] = PDFNum(-1))
+#fontdesc['FontFamily'] = PDFString("Minion Pro SmBd"))
+fontdesc['Flags'] = PDFNum(34)
+#fontdesc['XHeight'] = PDFNum(440))
+#fontdesc['FontWeight'] = PDFNum(600))
+#fontdesc['StemV'] = PDFNum(112))
+#fontdesc['Ascent'] = PDFNum(1011))
+#fontdesc['CapHeight'] = PDFNum(651))
+#fontdesc['FontStrech'] = PDFName("Normal"))
+#fontdesc['FontBox'] = "[-308 -360 1684 1011]")
+fontdesc['FontFile3'] = PDFRef(fontstream)
+#fontdesc['FontName'] = PDFName("KIOPAZ+MinionPro-Semibold"))
+
+
+doc += fontdesc
+
+#font
+font = PDFDict()
+font['Type'] = PDFName("Font")
+font['Subtype'] = PDFName("TrueType")
+#font['FirstChar'] = PDFNum(31))
+#font['LastChar'] = PDFNum(122))
+#font['MediaBox'] = "[10 10 1000 1000]")
+font['BBox'] = "[10 12 10 12 100 12 100]"
+font['BaseFont'] = PDFName("s")
+font['Encoding'] = PDFName("WinAnsiEncoding")
+font['FontDescriptor'] = PDFRef(fontdesc)
+doc += font
+
+#name:font map
+fontnames = PDFDict()
+fontnames['F1'] = PDFRef(font)
+
+#resources
+resources = PDFDict()
+resources['Font'] = fontnames
+
+#contents
+contents= PDFStream(
+'''BT 
+/F1 24 Tf 
+240 700 Td 
+(uCon 2009) Tj 
+ET''')
+doc += contents
+
+#page
+page = PDFDict()
+page['Type'] = PDFName("Page")
+page['Resources'] = resources
+page['Contents'] = PDFRef(contents)
+doc += page
+
+#contents
+dummycontents= PDFStream(
+'''fegwbhk qew; sd/ dsfls d ''')
+doc += dummycontents
+
+#page
+dummypage = PDFDict()
+dummypage['Type'] = PDFName("Page")
+dummypage['Resources'] = resources
+dummypage['Contents'] = PDFRef(dummycontents)
+doc += dummypage
+
+
+#pages
+pages = PDFDict()
+pages['Type'] = PDFName("Pages")
+pages['Kids'] = PDFArray([PDFRef(dummypage),PDFRef(page)])
+pages['Count'] = PDFNum(2)
+doc += pages
+
+#add parent reference in page
+page['Parent'] = PDFRef(pages)
+#add parent reference in page
+dummypage['Parent'] = PDFRef(pages)
+
+
+#catalog
+catalog = PDFDict()
+catalog['Type'] = PDFName("Catalog")
+catalog['Pages'] = PDFRef(pages)
+doc += catalog
+doc.setRoot(catalog)
+
+file_output.write(str(doc))
+
