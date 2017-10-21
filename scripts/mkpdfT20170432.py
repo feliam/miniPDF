@@ -37,12 +37,12 @@ decodeparams['Colors'] = PDFNum(1)
 decodeparams['BitsPerComponent'] = PDFNum(16)
 decodeparams['Predictor'] = PDFNum(2)
 
-decodeparams['K'] = PDFNum(0x3fffffff-4)
-decodeparams['Rows'] = PDFNum(0)
-decodeparams['EndOfLine'] = PDFBool(False)
-decodeparams['EncodedByteAlign'] = PDFBool(False)
-decodeparams['EndOfBlock'] = PDFBool(True)
-decodeparams['BlackIs1'] = PDFBool(False)
+#decodeparams['K'] = PDFNum(0x3fffffff-4)
+#decodeparams['Rows'] = PDFNum(0)
+#decodeparams['EndOfLine'] = PDFBool(False)
+#decodeparams['EncodedByteAlign'] = PDFBool(False)
+#decodeparams['EndOfBlock'] = PDFBool(True)
+#decodeparams['BlackIs1'] = PDFBool(False)
 
 
 xobj = PDFStream("z"*100 )#file(sys.argv[1]).read())
@@ -51,12 +51,11 @@ xobj['Subtype'] = PDFName('Image')
 xobj['Width'] = PDFNum(_width)
 xobj['Height'] = PDFNum(_height)
 xobj['ColorSpace'] = PDFName('DeviceRGB')
-xobj['BitsPerComponent'] = PDFNum(1)
-xobj['Filter'] = PDFName('CCITTFaxDecode')
+xobj['Filter'] = PDFName('FlateDecode')
 xobj['W'] = PDFArray( [PDFNum(0),PDFNum(0),PDFNum(0)] )
 xobj['DecodeParms'] = decodeparams
 
-
+doc+= xobj
 #font
 font = PDFDict()
 font['Name'] = PDFName('F1')
