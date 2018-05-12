@@ -57,7 +57,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Application Frameworks',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         ],
-    scripts=['scripts/mkpdftext', 'scripts/mkpdfxfa', 'scripts/mkpdfotf'],
+    scripts=['scripts/mkpdftext', 'scripts/mkpdfxfa', 'scripts/mkpdfotf', 'scripts/mkpdfjs'],
     #extras_require={
     #    'testing': ['pytest'],
     #}
