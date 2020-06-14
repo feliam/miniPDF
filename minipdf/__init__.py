@@ -1,3 +1,3 @@
-from minipdf import *
+from .minipdf import *
 
 __version__ = '0.1'
