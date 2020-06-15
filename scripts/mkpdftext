@@ -3,7 +3,11 @@
 '''
 Make a minimal PDF file displaying some text.
 '''
-import sys, StringIO
+import sys
+try:
+    from StringIO import StringIO
+except:
+    from io import StringIO
 from minipdf import PDFDoc, PDFName, PDFNum, PDFString, PDFRef, PDFStream, PDFDict, PDFArray
 
 import optparse
@@ -15,7 +19,7 @@ parser.add_option("-o", "--output", metavar="OFILE", help="write output to OFILE
 if options.input:
     file_input = file(options.input)
 elif len(args) > 0:
-    file_input = StringIO.StringIO(" ".join(args))
+    file_input = StringIO(" ".join(args))
 else:
     file_input = sys.stdin
 
