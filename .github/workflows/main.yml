@@ -27,4 +27,4 @@ jobs:
     # Runs a single command using the runners shell
     - name: Test
       run: |
-        python -m unittest discover -v test
+        python -m unittest discover -v $GITHUB_WORKSPACE/tests
