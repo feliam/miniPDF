@@ -1,3 +1,5 @@
+![CI](https://github.com/feliam/miniPDF/workflows/CI/badge.svg)
+
 miniPDF
 =======
 
